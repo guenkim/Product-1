@@ -204,18 +204,6 @@
       "id": 41
     },
     {
-      "subject": "dsfdsdfsfdsf",
-      "completed": true,
-      "body": "fdsfds",
-      "id": 42
-    },
-    {
-      "subject": "ewrew",
-      "completed": false,
-      "body": "ewrewr",
-      "id": 43
-    },
-    {
       "subject": "111111111",
       "completed": true,
       "body": "fdsfdsf",
@@ -223,7 +211,7 @@
     },
     {
       "subject": "dsfds",
-      "completed": false,
+      "completed": true,
       "body": "fdss",
       "id": 45
     }
