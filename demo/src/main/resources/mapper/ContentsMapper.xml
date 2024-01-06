@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.contents.repository.mybatis.ContentMapper">
+    <!--
+    <select id="findLimitCount" resultType="com.study.board.vo.ArticleVO" resultMap="articleResult">
+        select
+        count(*) cnt
+        from LIMIT_USER_INFO A
+        inner join LIMIT_USER_MNTRNG B
+        ON A.USER_ID = B.USER_ID
+        AND A.DSBRD_NM = B.DSBRD_NM
+        WHERE B.MNTRNG_DT = (
+        SELECT
+        MAX(TMP.MNTRNG_DT)
+        FROM LIMIT_USER_MNTRNG TMP
+        WHERE TMP.USER_ID = B.USER_ID
+        AND TMP.DSBRD_NM = B.DSBRD_NM
+        )
+    </select>
+
+
+    <select id="findLimitListPage" resultType="com.study.board.vo.ArticleVO" resultMap="articleResult">
+
+        select
+
+        A.LMT_RULE_LCLAS_DESC,
+
+        A.DSBRD_NM ,
+
+        A.USER_ID,
+
+        TO_CHAR(A.CRT_DT , 'YYYY-MM-DD HH:MI:SS') ,
+
+        TO_CHAR(B.MNTRNG_DT , 'YYYY-MM-DD HH:MI:SS'),
+
+        B.MNTRNG_CD ,
+
+        NVL(B.EML_SNDNG_DT,''),
+
+        A.EML_SUBSCRP_YN
+
+        from LIMIT_USER_INFO A
+
+        inner join LIMIT_USER_MNTRNG B
+
+        ON A.USER_ID = B.USER_ID
+
+        AND A.DSBRD_NM = B.DSBRD_NM
+
+        WHERE B.MNTRNG_DT = (
+
+        SELECT
+
+        MAX(TMP.MNTRNG_DT)
+
+        FROM LIMIT_USER_MNTRNG TMP
+
+        WHERE TMP.USER_ID = B.USER_ID
+
+        AND TMP.DSBRD_NM = B.DSBRD_NM
+
+        )
+
+        AND A.USER_ID = 'geun1'
+
+        ORDER BY A.DSBRD_NM
+
+    </select>
+
+
+    <select id="findLimitDailyList" resultType="com.study.board.vo.ArticleVO" resultMap="articleResult">
+
+        SELECT
+
+        A.DSBRD_NM
+
+        ,A.LMT_RULE_CODE
+
+        ,B.LMT_RULE_DESC
+
+        ,C.SITE_NM_DETAIL
+
+        ,NVL(B.LMT_COLNM1,'')
+
+        ,NVL(B.LMT_COLNM2,'')
+
+        ,NVL(B.LMT_COLNM3,'')
+
+        ,NVL(B.LMT_COLNM4,'')
+
+        ,NVL(C.LMT_COL_VL1,'')
+
+        ,NVL(C.LMT_COL_VL2,'')
+
+        ,NVL(C.LMT_COL_VL3,'')
+
+        ,NVL(C.LMT_COL_VL4,'')
+
+        ,C.ABNRML_CD
+
+        FROM LIMIT_USER_DTL A
+
+        LEFT OUTER JOIN LIMIT_CODE B
+
+        ON A.LMT_RULE_CODE = B.LMT_RULE_CODE
+
+        INNER JOIN LIMIT_DAILY_INFO C
+
+        ON B.LMT_RULE_CODE = C.LMT_RULE_CODE
+
+        WHERE A.USER_ID ='geun1'
+
+        AND C.MNTRNG_DT =
+
+        (
+
+        SELECT
+
+        MAX(TMP.MNTRNG_DT)
+
+        FROM LIMIT_USER_MNTRNG TMP
+
+        WHERE TMP.USER_ID = A.USER_ID
+
+        AND TMP.DSBRD_NM = A.DSBRD_NM
+
+        )
+
+        ORDER BY C.LMT_RULE_CODE ASC, C.SITE_NM_DETAIL ASC
+
+    </select>
+    -->
+</mapper>
+
+        
+
+        

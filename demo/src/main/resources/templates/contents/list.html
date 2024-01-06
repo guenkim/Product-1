@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+
+      layout:decorate="~{layout/main-layout}">
+
+<!--layout:decorator="layout/main-layout">-->
+
+
+<head>
+
+    <title>List</title>
+
+    <!-- Page level plugin CSS-->
+
+    <th:block layout:fragment="contentsCss">
+
+        <link rel='stylesheet' th:href='@{/static/toastUI/css/tui-grid.css}'>
+
+        <link rel='stylesheet' th:href='@{/static/toastUI/css/tui-pagination.css}'>
+
+    </th:block>
+
+</head>
+
+
+<!-- toast ui 송신전문 형식 -->
+
+<!--
+
+    page=1&perPage=10 이런식으로 보냄
+
+    server에서 Pageable 객체에 잘 받아서 처리 해야 함.
+
+-->
+
+<!-- toast ui 응답전문 형식 -->
+
+<!--
+
+{
+
+    "result": true,
+
+    "data":
+
+    {
+
+        "contents": [],
+
+        "pagination":
+
+        {
+
+        "page": 1,
+
+        "totalCount": 100
+
+        }
+
+    }
+
+}
+
+
+
+{
+
+    "data": [],
+
+    "meta": {
+
+        "userMessage": "",
+
+        "systemMessage": "",
+
+        "displayType": null,
+
+        "code": "",
+
+        "page": {
+
+            "sort": {
+
+                "empty": false,
+
+                "sorted": true,
+
+                "unsorted": false
+
+            },
+
+            "offset": 5,
+
+            "pageNumber": 1,
+
+            "pageSize": 5,
+
+            "paged": true,
+
+            "unpaged": false
+
+        },
+
+        "totalCount": 0
+
+    }
+
+}
+
+
+
+
+
+-->
+
+
+<body>
+
+<!-- header를 작성하지 않아도 header가 이 위치에 구성된다. -->
+
+<div class="container" layout:fragment="content">
+
+    <div class="page-header">
+
+        <h1>
+            <th:block th:text="#{cmn.message.view.list.label.title}"/>
+        </h1>
+
+    </div>
+
+    <div>
+
+        <th:block th:text="#{cmn.message.view.list.label.id}"/>
+        : <input type="text" id="contentId"/>
+
+        <th:block th:text="#{cmn.message.view.list.label.nm}"/>
+        : <input type="text" id="contentNm"/>
+
+        <th:block th:text="#{cmn.message.view.list.label.content}"/>
+        : <input type="text" id="content"/>
+
+        <button id="btnSearch">
+
+            <th:block th:text="#{cmn.message.view.list.label.search}"/>
+
+        </button>
+
+    </div>
+
+    <div id="grid"></div>
+
+
+</div>
+
+
+<!-- 이 위치에 Bootstrap/Jquery core JavaScript가 구성된다. -->
+
+
+<!-- Page level plugin JavaScript-->
+
+
+<th:block layout:fragment="contentsScript">
+
+    <script src="/static/toastUI/js/tui-pagination.js"></script>
+
+    <script src="/static/toastUI/js/tui-grid.js"></script>
+
+</th:block>
+
+
+<!-- Custom scripts for this pages-->
+
+
+<th:block layout:fragment="customScript">
+
+
+    <script th:inline="javascript">
+
+
+
+     $( document ).ready(function() {
+
+
+
+        /*<![CDATA[*/
+
+        const id = /*[[#{cmn.message.view.list.label.grid.id}]]*/;
+
+        const nm = /*[[#{cmn.message.view.list.label.grid.nm}]]*/;
+
+        const content = /*[[#{cmn.message.view.list.label.grid.content}]]*/;
+
+        const modeId = /*[[#{cmn.message.view.list.label.grid.modeId}]]*/;
+
+        const regdt = /*[[#{cmn.message.view.list.label.grid.regdt}]]*/;
+
+        const moddt = /*[[#{cmn.message.view.list.label.grid.moddt}]]*/;
+
+        /*]]>*/
+
+
+
+        //현재 언어 셋 확인
+
+        var reqURL = "/api/common/languageInfo"; // 요청 주소
+
+        $.ajax({
+
+                // [요청 시작 부분]
+
+                url: reqURL, //주소
+
+                data: '', //전송 데이터
+
+                type: "GET", //전송 타입
+
+                async: true, //비동기 여부
+
+                timeout: 5000, //타임 아웃 설정
+
+                dataType: "TEXT", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+
+                contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+
+
+
+                // [응답 확인 부분 - json 데이터를 받습니다]
+
+                success: function(response) {
+
+                    if(response){
+
+                        $("#langId").val(response);
+
+                    }
+
+                },
+
+
+
+                // [에러 확인 부분]
+
+                error: function(xhr) {
+
+                    console.log("");
+
+                    console.log("[requestPostBodyJson] : [error] : " + JSON.stringify(xhr));
+
+                    console.log("");
+
+                },
+
+
+
+                // [완료 확인 부분]
+
+                complete:function(data,textStatus) {
+
+                    console.log("");
+
+                    console.log("[requestPostBodyJson] : [complete] : " + textStatus);
+
+                    console.log("");
+
+                }
+
+        });
+
+
+
+
+
+
+
+        var grid;
+
+        $("#btnSearch").click(function(){
+
+            if(grid){
+
+                $("#grid").empty();
+
+            }
+
+             grid = new tui.Grid({
+
+              el: document.getElementById('grid'),
+
+              data: {
+
+                api: {
+
+                  readData: {
+
+                                url: '/api/toast/list',
+
+                                method: 'GET',
+
+                                initParams: {
+
+                                    /**  page=1&perPage=5 이런식으로 보냄 **/
+
+                                    contentId : $("#contentId").val(),
+
+                                    contentNm : $("#contentNm").val(),
+
+                                    content : $("#content").val()
+
+                                }
+
+                            }
+
+                }
+
+              },
+
+              scrollX: false,
+
+              scrollY: false,
+
+              minBodyHeight: 30,
+
+              rowHeaders: ['rowNum'],
+
+              pageOptions: {
+
+                perPage: 5
+
+              },
+
+              columns: [
+
+                {
+
+                  header: id,
+
+                  name: 'contentId'
+
+                },
+
+                {
+
+                  header: nm,
+
+                  name: 'contentNm'
+
+                },
+
+                {
+
+                  header: content,
+
+                  name: 'content'
+
+                },
+
+                {
+
+                  header: modeId,
+
+                  name: 'modid'
+
+                },
+
+                {
+
+                  header: regdt,
+
+                  name: 'regdt'
+
+                },
+
+                {
+
+                  header: moddt,
+
+                  name: 'moddt'
+
+                }
+
+              ]
+
+            });
+
+
+
+            grid.on('click', ev => {
+
+                // 클릭한 Row의 정보를 dataRow에 저장
+
+                let dataRow = grid.getRow(ev.rowKey);
+
+                var contentId = dataRow['contentId'];
+
+                var screen_url = "/view/update/"+contentId;
+
+                location.href = screen_url;
+
+
+
+            });
+
+
+
+        });
+
+
+
+        $("#langId").on( "change", function() {
+
+                var langs = [];
+
+                var langCode = $("#langId").val();
+
+                langs.push(langCode);
+
+                var reqURL = "/api/common/language"; // 요청 주소
+
+                        $.ajax({
+
+                                // [요청 시작 부분]
+
+                                url: reqURL, //주소
+
+                                //data: langs, //전송 데이터
+
+                                data: JSON.stringify(langs), //전송 데이터
+
+                                type: "POST", //전송 타입
+
+                                async: true, //비동기 여부
+
+                                timeout: 5000, //타임 아웃 설정
+
+                                dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+
+                                contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+
+
+
+                                // [응답 확인 부분 - json 데이터를 받습니다]
+
+                                success: function(response) {
+
+                                    console.log("");
+
+                                    console.log("[requestPostBodyJson] : [response] : " + JSON.stringify(response));
+
+                                    console.log("");
+
+                                    if(response == true){
+
+                                        location.reload();
+
+                                    }
+
+                                },
+
+
+
+                                // [에러 확인 부분]
+
+                                error: function(xhr) {
+
+                                    console.log("");
+
+                                    console.log("[requestPostBodyJson] : [error] : " + JSON.stringify(xhr));
+
+                                    console.log("");
+
+                                },
+
+
+
+                                // [완료 확인 부분]
+
+                                complete:function(data,textStatus) {
+
+                                    console.log("");
+
+                                    console.log("[requestPostBodyJson] : [complete] : " + textStatus);
+
+                                    console.log("");
+
+                                }
+
+                        });
+
+            });
+
+
+
+    });
+
+
+
+    </script>
+
+
+</th:block>
+
+
+</body>
+
+
+</html>
+

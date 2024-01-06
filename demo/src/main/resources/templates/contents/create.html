@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+
+      layout:decorate="~{layout/main-layout}">
+
+<head>
+
+    <title>등록화면</title>
+
+    <!-- Page level plugin CSS-->
+
+    <th:block layout:fragment="contentsCss">
+
+        <!--<link rel='stylesheet' th:href='@{/static/toastUI/css/toastui-editor.css}'>-->
+
+        <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
+
+    </th:block>
+
+</head>
+
+
+<body>
+
+<!-- header를 작성하지 않아도 header가 이 위치에 구성된다. -->
+
+<div class="container" layout:fragment="content">
+
+    <div>
+
+        <div>
+
+            <th:block th:text="#{cmn.message.view.create.label.nm}"/>
+            : <input type="text" id="contentNm"/>
+
+        </div>
+
+        <div>
+
+            <th:block th:text="#{cmn.message.view.create.label.content}"/>
+            :
+            <div id="editor"></div>
+
+        </div>
+
+    </div>
+
+    <div align="right">
+
+        <button id="btnSave">
+
+            <th:block th:text="#{cmn.message.view.create.label.register}"/>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- Page level plugin JavaScript-->
+
+<th:block layout:fragment="contentsScript">
+
+    <!--<script src="/static/toastUI/js/toastui-editor-all.js"></script>-->
+
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+</th:block>
+
+
+<!-- Custom scripts for this pages-->
+
+<th:block layout:fragment="customScript">
+
+    <script th:inline="javascript">
+
+        $( document ).ready(function() {
+
+                 /*<![CDATA[*/
+
+                    const saveMsg = /*[[#{cmn.message.view.alert.register}]]*/;
+
+                    const updateMsg = /*[[#{cmn.message.view.alert.update}]]*/;
+
+                    const deleteMsg = /*[[#{cmn.message.view.alert.delete}]]*/;
+
+                /*]]>*/
+
+
+
+                //현재 언어 셋 확인
+
+                var reqURL = "/api/common/languageInfo"; // 요청 주소
+
+                $.ajax({
+
+                        // [요청 시작 부분]
+
+                        url: reqURL, //주소
+
+                        data: '', //전송 데이터
+
+                        type: "GET", //전송 타입
+
+                        async: true, //비동기 여부
+
+                        timeout: 5000, //타임 아웃 설정
+
+                        dataType: "TEXT", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+
+                        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+
+
+
+                        // [응답 확인 부분 - json 데이터를 받습니다]
+
+                        success: function(response) {
+
+                            if(response){
+
+                                $("#langId").val(response);
+
+                            }
+
+                        },
+
+
+
+                        // [에러 확인 부분]
+
+                        error: function(xhr) {
+
+                            console.log("");
+
+                            console.log("[requestPostBodyJson] : [error] : " + JSON.stringify(xhr));
+
+                            console.log("");
+
+                        },
+
+
+
+                        // [완료 확인 부분]
+
+                        complete:function(data,textStatus) {
+
+                            console.log("");
+
+                            console.log("[requestPostBodyJson] : [complete] : " + textStatus);
+
+                            console.log("");
+
+                        }
+
+                });
+
+
+
+                const Editor = toastui.Editor;
+
+                const editor = new Editor({
+
+                      el: document.querySelector('#editor'),
+
+                      height: '600px',
+
+                      initialEditType: 'markdown',
+
+                      previewStyle: 'vertical'
+
+                    });
+
+
+
+                $("#btnSave").click(function(){
+
+
+
+                    var contentNm = $("#contentNm").val();
+
+                    //var content = editor.getHTML();
+
+                    var content = editor.getMarkdown();
+
+
+
+                    // [요청 url 선언]
+
+                    var reqURL = "/api/create"; // 요청 주소
+
+                    var jsonData = {
+
+                            "contentNm" : contentNm,
+
+                            "content" : content
+
+                        };
+
+
+
+                    $.ajax({
+
+                            // [요청 시작 부분]
+
+                            url: reqURL, //주소
+
+                            data: JSON.stringify(jsonData), //전송 데이터
+
+                            type: "POST", //전송 타입
+
+                            async: true, //비동기 여부
+
+                            timeout: 5000, //타임 아웃 설정
+
+                            dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+
+                            contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+
+
+
+                            // [응답 확인 부분 - json 데이터를 받습니다]
+
+                            success: function(response) {
+
+                                console.log("");
+
+                                console.log("[requestPostBodyJson] : [response] : " + JSON.stringify(response));
+
+                                console.log("");
+
+                                alert("등록 되었습니다.");
+
+                            },
+
+
+
+                            // [에러 확인 부분]
+
+                            error: function(xhr) {
+
+                                console.log("");
+
+                                console.log("[requestPostBodyJson] : [error] : " + JSON.stringify(xhr));
+
+                                console.log("");
+
+                            },
+
+
+
+                            // [완료 확인 부분]
+
+                            complete:function(data,textStatus) {
+
+                                console.log("");
+
+                                console.log("[requestPostBodyJson] : [complete] : " + textStatus);
+
+                                console.log("");
+
+                            }
+
+                    });
+
+                });
+
+
+
+                $("#langId").on( "change", function() {
+
+                var langs = [];
+
+                var langCode = $("#langId").val();
+
+                langs.push(langCode);
+
+                var reqURL = "/api/common/language"; // 요청 주소
+
+                        $.ajax({
+
+                                // [요청 시작 부분]
+
+                                url: reqURL, //주소
+
+                                //data: langs, //전송 데이터
+
+                                data: JSON.stringify(langs), //전송 데이터
+
+                                type: "POST", //전송 타입
+
+                                async: true, //비동기 여부
+
+                                timeout: 5000, //타임 아웃 설정
+
+                                dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+
+                                contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+
+
+
+                                // [응답 확인 부분 - json 데이터를 받습니다]
+
+                                success: function(response) {
+
+                                    console.log("");
+
+                                    console.log("[requestPostBodyJson] : [response] : " + JSON.stringify(response));
+
+                                    console.log("");
+
+                                    if(response == true){
+
+                                        location.reload();
+
+                                    }
+
+                                },
+
+
+
+                                // [에러 확인 부분]
+
+                                error: function(xhr) {
+
+                                    console.log("");
+
+                                    console.log("[requestPostBodyJson] : [error] : " + JSON.stringify(xhr));
+
+                                    console.log("");
+
+                                },
+
+
+
+                                // [완료 확인 부분]
+
+                                complete:function(data,textStatus) {
+
+                                    console.log("");
+
+                                    console.log("[requestPostBodyJson] : [complete] : " + textStatus);
+
+                                    console.log("");
+
+                                }
+
+                        });
+
+            });
+
+
+
+        });
+
+
+
+
+
+
+    </script>
+
+</th:block>
+
+</body>
+
+</html>
+

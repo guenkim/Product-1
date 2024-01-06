@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <property name="LOG_PATH" value="c:/log/local/dss" />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/dss_logfile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/dss_logfile_%d{yyyyMMdd}</fileNamePattern>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <!--
+    <springProperty name="driverClassName" source="spring.datasource.hikari.driver-class-name"/>
+    <springProperty name="url" source="#spring.datasource.hikari.jdbc-url"/>
+    <springProperty name="username" source="#spring.datasource.hikari.username"/>
+    <springProperty name="password" source="#spring.datasource.hikari.password"/>
+
+    <appender name="DB" class="com.study.config.log.LogDBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+        <driverClass>${driverClassName}</driverClass>
+        <url>${url}</url>
+        <user>${username}</user>
+        <password>${password}</password>
+        </connectionSource>
+        <filter class="com.study.config.log.LogDBFilter"/>
+    </appender>
+    -->
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5p] [%F] %M\(%L\) : %m%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>EVENT</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+
+
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="DB"/>-->
+    </root>
+
+
+    <logger name="com" level="DEBUG"/>
+    <logger name="jdbc" level="OFF"/>
+    <logger name="jdbc.sqlonly" level="OFF"/>
+    <logger name="jdbc.sqltiming" level="OFF"/>
+    <logger name="jdbc.audit" level="OFF"/>
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.resultsettable" level="OFF"/>
+    <logger name="jdbc.connection" level="OFF"/>
+</configuration>

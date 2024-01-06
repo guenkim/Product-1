@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!-- HTML Body Tag 내 Header 구성 -->
+
+<header th:fragment="header">
+
+    <nav class="navbar navbar-inverse">
+
+        <a class="navbar-brand" href="/view/list">
+
+            <th:block th:text="#{cmn.message.view.header.search}"/>
+
+        </a>
+
+        <a class="navbar-brand" href="/view/create">
+
+            <th:block th:text="#{cmn.message.view.header.register}"/>
+
+        </a>
+        <p align="right">
+
+            언어지원 : <select id="langId">
+
+            <option value="ko">ko</option>
+
+            <option value="en">en</option>
+
+        </select>
+
+        </p>
+
+    </nav>
+
+</header>
+
+</html>
